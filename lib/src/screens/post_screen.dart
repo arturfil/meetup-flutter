@@ -1,30 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:meetup/src/models/post.dart';
+import 'package:meetup/src/services/post_api_provider.dart';
 import 'package:meetup/src/widgets/bottom_navigation.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+
 
 class PostScreen extends StatefulWidget {
-  const PostScreen({Key? key}) : super(key: key);
+  PostScreen({Key? key}) : super(key: key);
 
+  final PostApiProvider _api = PostApiProvider();
   @override
   _PostScreenState createState() => _PostScreenState();
 }
 
 class _PostScreenState extends State<PostScreen> {
-  List<dynamic> _posts = [];
+  List<Post> _posts = [];
   @override
   void initState() {
     super.initState();
     _fetchPosts();
   }
 
-  void _fetchPosts() {
-    http
-        .get(Uri.parse("https://jsonplaceholder.typicode.com/posts"))
-        .then((response) {
-      final posts = json.decode(response.body);
-      setState(() => _posts = posts);
-    });
+  _fetchPosts() async {
+    List<Post> posts = await widget._api.fetchPosts();
+    setState(() => _posts = posts);
   }
 
   @override
@@ -36,7 +34,7 @@ class _PostScreenState extends State<PostScreen> {
         elevation: 0,
         title: const Text(
           'PostScreen',
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black, fontSize: 30, fontWeight: FontWeight.w700),
         ),
       ),
       body: _PostList(posts: _posts),
@@ -46,20 +44,29 @@ class _PostScreenState extends State<PostScreen> {
 }
 
 class _PostList extends StatelessWidget {
-  final List<dynamic> _posts;
+  final List<Post> _posts;
 
-  const _PostList({Key? key, required List posts})
+  const _PostList({Key? key, required List<Post> posts})
       : _posts = posts,
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: _posts.length,
+      itemCount: _posts.length * 2,
       itemBuilder: (BuildContext context, int i) {
-        return ListTile(
-          title: Text(_posts[i]['title']),
-          subtitle: Text(_posts[i]['body']),
+        if (i.isOdd) {
+          return const Divider();
+        }
+        final index = i ~/ 2;
+        return Column(
+          children: [
+            ListTile(
+              title: Text(_posts[index].name),
+              subtitle: Text("Roast: ${_posts[index].roast}"),
+            ),
+            // Image.network(_posts[index].image.toString())
+          ],
         );
       },
     );

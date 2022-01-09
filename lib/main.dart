@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:meetup/src/screens/home_screen.dart';
 import 'package:meetup/src/screens/meetup_detail_screen.dart';
 import 'package:meetup/src/screens/post_screen.dart';
 
@@ -17,10 +16,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const PostScreen(),
+      home: PostScreen(),
       routes: {
         '/meetupDetail': (context) => const MetupDetailScreen(),
-        '/home': (context) => const PostScreen(),
+        '/home': (context) => PostScreen(),
       },
     );
   }
